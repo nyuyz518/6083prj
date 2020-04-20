@@ -1,6 +1,6 @@
 /* NYU CSGY 6083 Project
  * sql inserts for pupulating some test data
- * Author: nyuyz518
+ * Author: yz518
 */
 use ticket;
 

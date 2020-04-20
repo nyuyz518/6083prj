@@ -1,6 +1,6 @@
 /* NYU CSGY 6083 Project
  * DDL For creating the db schema
- * Author: nyuyz518
+ * Author: yz518
 */
 
 use ticket;
@@ -60,6 +60,8 @@ create table tasks(
   key parent_tid (parent_tid),
   key wfid (wfid),
   key status (status),
+  fulltext index title (title),
+  fulltext index description(description),
   constraint fk_t_ptid foreign key (parent_tid) references tasks (tid),
   constraint fk_t_wfid foreign key (wfid) references workflows (wfid),
   constraint fk_t_sid foreign key (status) references status (sid)
