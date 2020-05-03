@@ -1,0 +1,110 @@
+dbms,TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,ORDINAL_POSITION,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,CONSTRAINT_TYPE,REFERENCED_TABLE_SCHEMA,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+mysql,sys,sys_config,variable,1,varchar,128,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,Passenger,pid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,Card,cid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,TimePrice,mday,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,Station,sid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,AddTime,cid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,AddTime,attime,2,datetime,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,AddValue,cid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,AddValue,avtime,2,datetime,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,Ride,cid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,Ride,sid,2,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,Ride,rtime,3,datetime,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,cake,cakeid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,customer,custid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,ingredient,ingredid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,orders,custid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,orders,cakeid,2,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,orders,ordertime,3,datetime,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,contain,cakeid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,bakery,contain,ingredid,2,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,video,customer,cid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,video,branch,bid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,video,movie,mid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,video,copy,copyid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,video,rental,cid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,video,rental,copyid,2,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,video,rental,outdate,3,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,ticket,status,sid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,ticket,workflows,wfid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,ticket,users,uid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,ticket,tasks,tid,1,int,NULL,"PRIMARY KEY",NULL,NULL,NULL
+mysql,subway,Card,pid,2,int,NULL,"FOREIGN KEY",subway,Passenger,pid
+mysql,subway,AddTime,cid,1,int,NULL,"FOREIGN KEY",subway,Card,cid
+mysql,subway,AddTime,mday,3,int,NULL,"FOREIGN KEY",subway,TimePrice,mday
+mysql,subway,AddValue,cid,1,int,NULL,"FOREIGN KEY",subway,Card,cid
+mysql,subway,Ride,cid,1,int,NULL,"FOREIGN KEY",subway,Card,cid
+mysql,subway,Ride,sid,2,int,NULL,"FOREIGN KEY",subway,Station,sid
+mysql,bakery,orders,custid,1,int,NULL,"FOREIGN KEY",bakery,customer,custid
+mysql,bakery,orders,cakeid,2,int,NULL,"FOREIGN KEY",bakery,cake,cakeid
+mysql,bakery,contain,cakeid,1,int,NULL,"FOREIGN KEY",bakery,cake,cakeid
+mysql,bakery,contain,ingredid,2,int,NULL,"FOREIGN KEY",bakery,ingredient,ingredid
+mysql,video,copy,mid,2,int,NULL,"FOREIGN KEY",video,movie,mid
+mysql,video,copy,bid,3,int,NULL,"FOREIGN KEY",video,branch,bid
+mysql,video,rental,cid,1,int,NULL,"FOREIGN KEY",video,customer,cid
+mysql,video,rental,copyid,2,int,NULL,"FOREIGN KEY",video,copy,copyid
+mysql,ticket,wf_state,wfid,1,int,NULL,"FOREIGN KEY",ticket,workflows,wfid
+mysql,ticket,wf_state,from_status,2,int,NULL,"FOREIGN KEY",ticket,status,sid
+mysql,ticket,wf_state,to_status,3,int,NULL,"FOREIGN KEY",ticket,status,sid
+mysql,ticket,tasks,parent_tid,3,int,NULL,"FOREIGN KEY",ticket,tasks,tid
+mysql,ticket,tasks,wfid,7,int,NULL,"FOREIGN KEY",ticket,workflows,wfid
+mysql,ticket,tasks,status,8,int,NULL,"FOREIGN KEY",ticket,status,sid
+mysql,ticket,assignment,tid,1,int,NULL,"FOREIGN KEY",ticket,tasks,tid
+mysql,ticket,assignment,uid,2,int,NULL,"FOREIGN KEY",ticket,users,uid
+mysql,ticket,task_status_history,tid,1,int,NULL,"FOREIGN KEY",ticket,tasks,tid
+mysql,ticket,task_status_history,status_id,2,int,NULL,"FOREIGN KEY",ticket,status,sid
+mysql,bakery,cake,cakename,2,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,cake,slices,3,int,NULL,NULL,NULL,NULL,NULL
+mysql,bakery,cake,status,4,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,cake,price,5,int,NULL,NULL,NULL,NULL,NULL
+mysql,bakery,contain,qty,3,int,NULL,NULL,NULL,NULL,NULL
+mysql,bakery,customer,custname,2,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,customer,ccn,3,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,customer,phoneno,4,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,customer,address,5,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,customer,city,6,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,customer,zip,7,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,ingredient,iname,2,char,30,NULL,NULL,NULL,NULL
+mysql,bakery,ingredient,price,3,int,NULL,NULL,NULL,NULL,NULL
+mysql,bakery,ingredient,available,4,int,NULL,NULL,NULL,NULL,NULL
+mysql,bakery,orders,pickuptime,4,datetime,NULL,NULL,NULL,NULL,NULL
+mysql,bakery,orders,pricepaid,5,int,NULL,NULL,NULL,NULL,NULL
+mysql,subway,AddTime,moneypaid,4,int,NULL,NULL,NULL,NULL,NULL
+mysql,subway,AddValue,money,3,int,NULL,NULL,NULL,NULL,NULL
+mysql,subway,Card,cexpireday,3,datetime,NULL,NULL,NULL,NULL,NULL
+mysql,subway,Card,cbalance,4,int,NULL,NULL,NULL,NULL,NULL
+mysql,subway,Passenger,pname,2,varchar,50,NULL,NULL,NULL,NULL
+mysql,subway,Ride,rprice,4,int,NULL,NULL,NULL,NULL,NULL
+mysql,subway,Station,sname,2,varchar,50,NULL,NULL,NULL,NULL
+mysql,subway,Station,saddress,3,varchar,100,NULL,NULL,NULL,NULL
+mysql,subway,TimePrice,mprice,2,int,NULL,NULL,NULL,NULL,NULL
+mysql,sys,sys_config,value,2,varchar,128,NULL,NULL,NULL,NULL
+mysql,sys,sys_config,set_time,3,timestamp,NULL,NULL,NULL,NULL,NULL
+mysql,sys,sys_config,set_by,4,varchar,128,NULL,NULL,NULL,NULL
+mysql,ticket,assignment,assigned_ts,3,timestamp,NULL,NULL,NULL,NULL,NULL
+mysql,ticket,status,sname,2,varchar,64,NULL,NULL,NULL,NULL
+mysql,ticket,task_status_history,created_ts,3,timestamp,NULL,NULL,NULL,NULL,NULL
+mysql,ticket,tasks,ttype,2,char,1,NULL,NULL,NULL,NULL
+mysql,ticket,tasks,reporter,4,int,NULL,NULL,NULL,NULL,NULL
+mysql,ticket,tasks,title,5,varchar,255,NULL,NULL,NULL,NULL
+mysql,ticket,tasks,description,6,text,65535,NULL,NULL,NULL,NULL
+mysql,ticket,tasks,created_ts,9,timestamp,NULL,NULL,NULL,NULL,NULL
+mysql,ticket,users,uname,2,varchar,100,NULL,NULL,NULL,NULL
+mysql,ticket,users,passwd,3,varchar,64,NULL,NULL,NULL,NULL
+mysql,ticket,users,email,4,varchar,320,NULL,NULL,NULL,NULL
+mysql,ticket,users,display_name,5,varchar,100,NULL,NULL,NULL,NULL
+mysql,ticket,users,created_ts,6,timestamp,NULL,NULL,NULL,NULL,NULL
+mysql,ticket,workflows,wfname,2,varchar,64,NULL,NULL,NULL,NULL
+mysql,ticket,workflows,created_ts,3,timestamp,NULL,NULL,NULL,NULL,NULL
+mysql,video,branch,bname,2,varchar,40,NULL,NULL,NULL,NULL
+mysql,video,branch,baddress,3,varchar,40,NULL,NULL,NULL,NULL
+mysql,video,customer,cname,2,varchar,40,NULL,NULL,NULL,NULL
+mysql,video,customer,caddress,3,varchar,40,NULL,NULL,NULL,NULL
+mysql,video,customer,cphone,4,varchar,10,NULL,NULL,NULL,NULL
+mysql,video,customer,ccn,5,int,NULL,NULL,NULL,NULL,NULL
+mysql,video,movie,title,2,varchar,40,NULL,NULL,NULL,NULL
+mysql,video,movie,genre,3,varchar,20,NULL,NULL,NULL,NULL
+mysql,video,movie,year,4,int,NULL,NULL,NULL,NULL,NULL
+mysql,video,rental,returndate,4,int,NULL,NULL,NULL,NULL,NULL
+mysql,video,rental,cost,5,int,NULL,NULL,NULL,NULL,NULL
