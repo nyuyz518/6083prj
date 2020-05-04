@@ -36,15 +36,17 @@ class UserController {
     }
 
     public function authUser($request, $response, $args) {
-        
         $secret = getenv("JWT_SECRET");
+        $uid = $request->getParsedBody()["uid"];
+        $pwd = $request->getParsedBody()["pwd"];
 
         $payload = [
-            "jti" => "aa"
+            "uid" => $uid 
         ];
 
         $token = JWT::encode($payload, $secret, "HS256");
         $response->getBody()->write(json_encode(["jwt" => $token]));
+
         return $response->withStatus(200);
     }
 }

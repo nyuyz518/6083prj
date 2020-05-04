@@ -12,6 +12,7 @@ use Src\Controller\UserController;
 $appContext = AppFactory::create();
 $appContext->add(new Tuupola\Middleware\JwtAuthentication([
     "secret" => getenv("JWT_SECRET"),
+    "attribute" => "jwt",
     "path" => "/task"
 ]));
 $appContext->addRoutingMiddleware();
