@@ -1,7 +1,7 @@
 <?php
 namespace Src\Repository;
 
-class TaskRepo {
+class UserRepo {
     private $db = null;
 
     public function __construct($db){
@@ -18,7 +18,7 @@ class TaskRepo {
 
     public function find($id){
         
-        $statement = "select * from tasks where tid = ?";
+        $statement = "select * from users where uid = ?";
 
         try {
             $statement = $this->db->prepare($statement);
@@ -35,7 +35,23 @@ class TaskRepo {
     }
     
     public function insert(Array $input){
+        $statement 
+            = "insert into users (uname, passwd, email, display_name, created_ts) values
+            (:uname, :passwd, :email, :display_name, :created_ts)";
 
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'uname' => $input['uname'],
+                'passwd'  => $input['passwd'],
+                'email' => $input['email'] ?? null,
+                'display_name' => $input['display_name'] ?? null,
+                'created_ts' => $input['created_ts'],
+            ));
+            return $statement->rowCount();
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }    
     }
 
     public function update($id, Array $input){
@@ -45,5 +61,4 @@ class TaskRepo {
     public function delete($id){
 
     }
-
 }

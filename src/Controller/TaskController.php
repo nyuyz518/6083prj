@@ -2,38 +2,27 @@
 namespace Src\Controller;
 
 use Src\Repository\TaskRepo;
+use Slim\Exception\HttpNotFoundException;
 
 class TaskController {
-    private $db;
     private $taskRepo;
 
     public function __construct($db, $app){
-        $this->db = $db;
         $this->taskRepo = new TaskRepo($db);
         $this->setupRoute($app);
     }
 
     private function setupRoute($app) {
-        $app->get('/task/{id}', function ($request, $response, $args){
-            // Show book identified by $args['id']
-            $payload = $this->getTask($args['id']);
-            $response->getBody()->write($payload);
-            return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
-        });
+        $app->get('/task/{id}', array($this, "getTask"));
     }
 
-    public function getTask($id){
-        $result = $this->taskRepo->find($id);
+    public function getTask($request, $response, $args){
+        $result = $this->taskRepo->find($args['id']);
         if (! $result) {
-            return $this->notFoundResponse();
+            throw new HttpNotFoundException($request);
         }
-        return json_encode($result);
+        $response->getBody()->write(json_encode($result));
+        return $response->withHeader("Content-Type", "application/json; charset=UTF-8");;
     }
 
-    private function notFoundResponse()
-    {
-        $response['status_code_header'] = 'HTTP/1.1 404 Not Found';
-        $response['body'] = null;
-        return $response;
-    }
 }

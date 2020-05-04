@@ -4,7 +4,8 @@
     "require": {
         "vlucas/phpdotenv": "^2.4",
         "slim/slim": "^4.0",
-        "slim/psr7": "*"     
+        "slim/psr7": "*",
+        "tuupola/slim-jwt-auth": "^3.4"     
     },
     "autoload": {
         "psr-4": {
