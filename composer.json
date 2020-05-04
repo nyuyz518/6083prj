@@ -2,11 +2,13 @@
     "name": "yz518/6083prj",
     "description": "Backend Rest API for 6083 Project",
     "require": {
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": "^2.4",
+        "slim/slim": "^4.0",
+        "slim/psr7": "*"     
     },
     "autoload": {
         "psr-4": {
-            "Src\\": "src/"
+           "Src\\": "src/"
         }
     }
 }
