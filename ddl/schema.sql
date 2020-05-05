@@ -3,12 +3,12 @@
  * Author: yz518
 */
 
-use ticket;
+use ticket; 
 
 drop table if exists tasks, users, assignment, workflows, wf_state, status, task_status_history;
 
 create table status (
-  sid int not null auto_increment,
+  sid int not null auto_increment, 
   sname varchar(64) not null,
   
   primary key (sid)
@@ -19,7 +19,7 @@ create table workflows (
   wfname varchar(64), 
   created_ts timestamp not null,
   
-  key (wfname),
+  key (wfname),            
   primary key (wfid)
 );
 
@@ -42,7 +42,9 @@ create table users(
   display_name varchar(100) not null,
   created_ts timestamp not null,
   
-  primary key (uid)
+  primary key (uid),
+  fulltext index display_name (display_name),
+  unique key (uname)
 );
 
 create table tasks(
