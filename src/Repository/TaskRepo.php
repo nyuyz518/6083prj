@@ -1,49 +1,51 @@
 <?php
+
 namespace Src\Repository;
 
-class TaskRepo {
+class TaskRepo
+{
     private $db = null;
 
-    public function __construct($db){
+    public function __construct($db)
+    {
         $this->db = $db;
     }
 
-    public function findAll(){
-        $statement = "";
+    public function findAllByPid($pid)
+    {
+        $statement = "select * from tasks where pid = ?";
+        $statement = $this->db->prepare($statement);
+        $statement->execute(array($pid));
+        return $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function search(){
-
+    public function findAllByTitle($title)
+    {
+        $statement = "select * from tasks where MATCH(title) against (? IN NATURAL LANGUAGE MODE)";
+        $statement = $this->db->prepare($statement);
+        $statement->execute(array($title));
+        return $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function find($id){
-        
+    public function find($id)
+    {
+
         $statement = "select * from tasks where tid = ?";
-
-        try {
-            $statement = $this->db->prepare($statement);
-            $statement->execute(array($id));
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            if(count($result) != 1){
-                return null;
-            } else {
-                return $result[0];
-            }
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        } 
-    }
-    
-    public function insert(Array $input){
-
+        $statement = $this->db->prepare($statement);
+        $statement->execute(array($id));
+        $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+        if (count($result) != 1) {
+            return null;
+        } else {
+            return $result[0];
+        }
     }
 
-    public function update($id, Array $input){
-
+    public function insert(array $input)
+    {
     }
 
-    public function delete($id){
-
+    public function update($id, array $input)
+    {
     }
-
 }

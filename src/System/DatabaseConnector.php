@@ -1,7 +1,9 @@
 <?php
+
 namespace Src\System;
 
-class DatabaseConnector {
+class DatabaseConnector
+{
 
     private $dbConnection = null;
 
