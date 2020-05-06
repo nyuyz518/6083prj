@@ -5,7 +5,7 @@
 
 use ticket; 
 
-drop table if exists tasks, users, assignment, workflows, wf_state, status, task_status_history;
+drop table if exists projects, ownership, tasks, users, assignment, workflows, wf_state, status, task_status_history;
 
 create table status (
   sid int not null auto_increment, 
@@ -47,9 +47,34 @@ create table users(
   unique key (uname)
 );
 
+create table projects (
+	pid int not null auto_increment,
+    pname varchar(255) not null,
+    description text default null,
+    wfid int not null,
+    created_ts timestamp not null,
+    
+    primary key (pid),
+	constraint fk_p_wfid foreign key (wfid) references workflows (wfid),
+    fulltext index pname (pname),
+    fulltext index description(description)
+);
+
+create table ownership (
+  pid int not null,
+  uid int not null,
+  created_ts timestamp not null,
+  
+  key pid (pid),
+  key uid (uid),
+  constraint fk_o_pid foreign key (pid) references projects (pid),
+  constraint fk_o_uid foreign key (uid) references users (uid)
+);
+
 create table tasks(
   tid int not null auto_increment,
   ttype char not null,
+  pid int not null,
   parent_tid int default null,
   reporter int not null,
   title varchar(255) not null,
@@ -64,6 +89,7 @@ create table tasks(
   key status (status),
   fulltext index title (title),
   fulltext index description(description),
+  constraint fk_t_pid foreign key (pid) references projects (pid),
   constraint fk_t_ptid foreign key (parent_tid) references tasks (tid),
   constraint fk_t_wfid foreign key (wfid) references workflows (wfid),
   constraint fk_t_sid foreign key (status) references status (sid)
