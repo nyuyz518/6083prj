@@ -12,4 +12,11 @@ class RestController
         $crc->update($payload);
         return $crc->hash();
     }
+
+    protected function optimisticLockFailure($request, $payload)
+    {
+        $ifMatch = $request->getHeader("If-Match");
+        $eTag = $this->getCRC32C($payload);
+        return $ifMatch && count($ifMatch) == 1 && $eTag != $ifMatch[0];
+    }
 }

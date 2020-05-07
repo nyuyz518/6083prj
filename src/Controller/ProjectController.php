@@ -56,9 +56,7 @@ class ProjectController extends RestController
             throw new HttpUnauthorizedException($request);
         }
 
-        $ifMatch = $request->getHeader("If-Match");
-        $eTag = $this->getCRC32C(json_encode($this->projectModel->getProject($args["pid"])));
-        if($ifMatch && count($ifMatch) == 1 && $eTag != $ifMatch[0]){
+        if($this->optimisticLockFailure($request, json_encode($this->projectModel->getProject($args["pid"])))){
             return $response->withStatus(412);
         }
 
@@ -72,12 +70,10 @@ class ProjectController extends RestController
             throw new HttpUnauthorizedException($request);
         }
 
-        $ifMatch = $request->getHeader("If-Match");
-        $eTag = $this->getCRC32C(json_encode($this->projectModel->getProject($args["pid"])));
-        if($ifMatch && count($ifMatch) == 1 && $eTag != $ifMatch[0]){
+        if($this->optimisticLockFailure($request, json_encode($this->projectModel->getProject($args["pid"])))){
             return $response->withStatus(412);
         }
-        
+                
         try{
             $this->projectModel->patch($jwt['uid'], $args["pid"], $request->getParsedBody());
             return $response->withStatus(204);

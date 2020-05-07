@@ -6,7 +6,7 @@ use Src\Model\TaskModel;
 
 use Slim\Exception\HttpNotFoundException;
 
-class TaskController
+class TaskController extends RestController
 {
     private $taskModel = null;
 
