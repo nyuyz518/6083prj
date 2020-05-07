@@ -37,7 +37,7 @@ class UserModel
     {
         $hash = hash('sha256', $pwd);
         $user = $this->userRepo->findByName($uname);
-        return $user == null ? false : $user['passwd'] == $hash;
+        return $user != null && $user['passwd'] == $hash ? $user["uid"] : null;
     }
 
     private function prepareRepoUser(array $input)

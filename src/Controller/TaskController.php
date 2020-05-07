@@ -18,8 +18,10 @@ class TaskController
 
     private function setupRoute($app)
     {
-        $app->get('/task/{id}', array($this, "getTask"));
         $app->get('/task', array($this, "listTasks"));
+        $app->post('/task', array($this, "newTask"));
+        $app->get('/task/{id}', array($this, "getTask"));
+        #$app->get('/task/{id}', array($this, "getTask"));
     }
 
     public function getTask($request, $response, $args)
@@ -37,5 +39,15 @@ class TaskController
         $query = $request->getQueryParams();
         $response->getBody()->write(json_encode($this->taskModel->findAll($query)));
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
+    }
+
+    public function getAssignees($request, $response, $args)
+    {
+        return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
+    }
+
+    public function updateTskAssignment($request, $response, $args)
+    {
+        return $response->withStatus(201);
     }
 }

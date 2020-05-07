@@ -64,3 +64,7 @@ and MATCH(i.title) against ('screen' IN NATURAL LANGUAGE MODE) and u.uname = 'Je
 /* Task Rest */
 
 select * from users where uid = 1;
+
+select pid, pname, description, wfid, created_ts from projects;
+
+select * from ownership;

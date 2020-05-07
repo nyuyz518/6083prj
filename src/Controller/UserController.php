@@ -26,7 +26,7 @@ class UserController
         $app->get('/user/{id}', array($this, "getUser"));
         $app->put('/user/{id}', array($this, "updateUser"));
         $app->post('/user', array($this, "newUser"));
-        $app->post('/user/auth', array($this, "authUser"));
+        $app->post('/auth', array($this, "authUser"));
     }
 
     public function listUsers($request, $response, $args)
@@ -73,10 +73,10 @@ class UserController
             throw new HttpBadRequestException($request);
         }
 
-        $uid = $body["uname"];
+        $uname = $body["uname"];
         $pwd = $body["pwd"];
 
-        if ($this->userModel->auth($uid, $pwd)) {
+        if ($uid = $this->userModel->auth($uname, $pwd)) {
             $secret = getenv("JWT_SECRET");
             $payload = [
                 "uid" => $uid

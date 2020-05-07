@@ -33,7 +33,6 @@ class UserRepo
 
     public function find($id)
     {
-
         $statement = "select * from users where uid = ?";
 
         $statement = $this->db->prepare($statement);

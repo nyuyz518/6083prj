@@ -12,8 +12,7 @@ $appContext = AppFactory::create();
 $appContext->add(new Tuupola\Middleware\JwtAuthentication([
     "secret" => getenv("JWT_SECRET"),
     "attribute" => "jwt",
-    "path" => ["/user", "/task", "/project"],
-    "ignore" => "/user/auth"
+    "path" => ["/task", "/project"]
 ]));
 $appContext->addRoutingMiddleware();
 $appContext->addBodyParsingMiddleware();
