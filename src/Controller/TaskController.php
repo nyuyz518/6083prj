@@ -127,11 +127,13 @@ class TaskController extends RestController
 
     public function getTaskStatusHistory($request, $response, $args)
     {
-        return $response->withStatus(201);
+        $response->getBody()->write(json_encode($this->taskModel->listStatusHistory($args["tid"])));
+        return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
 
     public function newTaskStatus($request, $response, $args)
     {
+        $this->taskModel->newStatusForTask($args["tid"], $request->getParsedBody());
         return $response->withStatus(201);
     }
 }

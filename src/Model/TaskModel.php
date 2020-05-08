@@ -55,6 +55,15 @@ class TaskModel
         }
     }
 
+    public function listStatusHistory($tid) 
+    {
+        return $this->taskRepo->listStatusHistory($tid);
+    }
+
+    public function newStatusForTask($tid, $s){
+        return $this->taskRepo->newStatusForTask($tid, $s);
+    }
+
     public function isAssigned($uid, $tid){
         $assignees = $this->taskRepo->getAssignees($tid);
         foreach($assignees as &$a){

@@ -2,6 +2,8 @@
 
 namespace Src\Repository;
 
+use Exception;
+
 class TaskRepo
 {
     private $db = null;
@@ -125,7 +127,6 @@ class TaskRepo
                         title = :title, 
                         description = :description, 
                         wfid = :wfid, 
-                        status = :status,
                         created_ts = :created_ts
                     where tid = :tid";
 
@@ -138,7 +139,6 @@ class TaskRepo
             "title" => $t["title"],
             "description" => $t["description"],
             "wfid" => $t["wfid"],
-            "status" => $t["status"],
             "created_ts" => $t["created_ts"],
             "tid" => $tid
         ]);
@@ -152,6 +152,42 @@ class TaskRepo
         $statement = $this->db->prepare($statement);
         $statement->execute(array($tid));
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function listStatusHistory($tid){
+        $statement = "select tid, status_id, created_ts 
+        from task_status_history
+        where tid = ?
+        order by created_ts desc";
+
+        $statement = $this->db->prepare($statement);
+        $statement->execute(array($tid));
+        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function newStatusForTask($tid, $s){
+        try{
+            $this->db->beginTransaction();
+            $statement = "insert into task_status_history (tid, status_id, created_ts)
+                        values (:tid, :status_id, :created_ts)";
+                        
+            $statement = $this->db->prepare($statement);
+            $statement->execute([
+                "tid" => $tid,
+                "status_id" => $s["status_id"],
+                "created_ts" => $s["created_ts"]
+            ]);
+
+            $statement = "update tasks set status = :status_id where tid = :tid";
+            $statement = $this->db->prepare($statement);
+            $statement->execute([
+                "tid" => $tid,
+                "status_id" => $s["status_id"]
+            ]);
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollback();
+        }
     }
 
     private function insertAssignee($tid, $assignee){
