@@ -32,6 +32,8 @@ class ProjectRepo
         if (count($result) != 1) {
             return null;
         } else {
+            $p = $result[0];
+            $p[ProjectRepo::OWNERS] = $this->getOwners($id);
             return $result[0];
         }
     }

@@ -3,7 +3,6 @@
 namespace Src\Model;
 
 use InvalidArgumentException;
-use Src\Exceptions\UnAuthorizedException;
 use Src\Repository\ProjectRepo;
 
 class ProjectModel
@@ -33,12 +32,7 @@ class ProjectModel
 
     public function getProject($id)
     {
-        $p = $this->projectRepo->find($id);
-        if($p){
-            $p[ProjectRepo::OWNERS] = $this->projectRepo->getOwners($id);
-            return $p;
-        }
-        return null;
+        return $this->projectRepo->find($id);
     }
 
     public function create($uid, $p)
@@ -52,12 +46,12 @@ class ProjectModel
         }
     }
 
-    public function update($uid, $pid, $p)
+    public function update($pid, $p)
     {
         $this->projectRepo->update($pid, $p);
     }
 
-    public function patch($uid, $pid, $p)
+    public function patch($pid, $p)
     {
         if(count($p) == 1 && array_key_exists(ProjectRepo::OWNERS, $p)){
             $this->projectRepo->updateOwners($pid, $p[ProjectRepo::OWNERS]);

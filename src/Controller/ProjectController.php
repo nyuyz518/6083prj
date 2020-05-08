@@ -2,10 +2,12 @@
 
 namespace Src\Controller;
 
+use PDOException;
 use Src\Model\ProjectModel;
 
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpNotFoundException;
 
 class ProjectController extends RestController
 {
@@ -33,11 +35,15 @@ class ProjectController extends RestController
     }
 
     public function getProject($request, $response, $args){
-        $json = json_encode($this->projectModel->getProject($args["pid"]));
-        $etag = $this->getCRC32C($json);
+        $p = $this->projectModel->getProject($args["pid"]);
+        if(!$p){
+            throw new HttpNotFoundException($request);
+        }
+        $json = json_encode($p);
+        $eTag = $this->getCRC32C($json);
         $response->getBody()->write($json);
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8")
-                        ->withHeader("ETag", $etag);
+                        ->withHeader("ETag", $eTag);
     }
 
     public function newProject($request, $response, $args){
@@ -45,6 +51,12 @@ class ProjectController extends RestController
         try{
             $this->projectModel->create($jwt['uid'], $request->getParsedBody());
             return $response->withStatus(201);
+        } catch (PDOException $e){
+            if($e->getCode() == 23000){
+                throw new HttpBadRequestException($request, $e);
+            }else {
+                throw $e;
+            }
         } catch (\InvalidArgumentException $e) {
             throw new HttpBadRequestException($request, $e);
         }
@@ -56,11 +68,24 @@ class ProjectController extends RestController
             throw new HttpUnauthorizedException($request);
         }
 
-        if($this->optimisticLockFailure($request, json_encode($this->projectModel->getProject($args["pid"])))){
+        $p = $this->projectModel->getProject($args["pid"]);
+        if(!$p){
+            throw new HttpNotFoundException($request);
+        }
+
+        if($this->optimisticLockFailure($request, json_encode($p))){
             return $response->withStatus(412);
         }
 
-        $this->projectModel->update($jwt['uid'], $args["pid"], $request->getParsedBody());
+        try{
+            $this->projectModel->update($args["pid"], $request->getParsedBody());
+        } catch (PDOException $e){
+            if($e->getCode() == 23000){
+                throw new HttpBadRequestException($request, $e);
+            }else {
+                throw $e;
+            }
+        }
         return $response->withStatus(204);
     }
 
@@ -70,13 +95,24 @@ class ProjectController extends RestController
             throw new HttpUnauthorizedException($request);
         }
 
-        if($this->optimisticLockFailure($request, json_encode($this->projectModel->getProject($args["pid"])))){
+        $p = $this->projectModel->getProject($args["pid"]);
+        if(!$p){
+            throw new HttpNotFoundException($request);
+        }
+
+        if($this->optimisticLockFailure($request, json_encode($p))){
             return $response->withStatus(412);
         }
                 
         try{
-            $this->projectModel->patch($jwt['uid'], $args["pid"], $request->getParsedBody());
+            $this->projectModel->patch($args["pid"], $request->getParsedBody());
             return $response->withStatus(204);
+        } catch (PDOException $e){
+            if($e->getCode() == 23000){
+                throw new HttpBadRequestException($request, $e);
+            }else {
+                throw $e;
+            }
         } catch (\InvalidArgumentException $e) {
             throw new HttpBadRequestException($request, $e);
         }
