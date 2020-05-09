@@ -7,6 +7,7 @@ use Src\Controller\TaskController;
 use Src\Controller\UserController;
 use Src\Controller\ProjectController;
 use Src\Controller\StatusController;
+use Src\Controller\WorkflowController;
 
 $appContext = AppFactory::create();
 $appContext->add(new Tuupola\Middleware\JwtAuthentication([
@@ -22,6 +23,8 @@ $taskController = new TaskController($dbConnection, $appContext);
 $userController = new UserController($dbConnection, $appContext);
 $projectController = new ProjectController($dbConnection, $appContext);
 $statusController = new StatusController($dbConnection, $appContext);
+$wfController = new WorkflowController($dbConnection, $appContext);
+
 
 
 $appContext->run();

@@ -23,6 +23,7 @@ class WorkflowRepo
         }
         $wf = $result[0];
         $wf[WorkflowRepo::STATE_MACHINE] = $this->findSMEntries($wfid);
+        return $wf;
     }
 
     public function findAll(){
