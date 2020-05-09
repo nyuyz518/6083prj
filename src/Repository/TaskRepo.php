@@ -49,12 +49,13 @@ class TaskRepo
 
     public function insert($t)
     {
-        try{
+        try {
             $this->db->beginTransaction();
             $tid = $this->insertTask($t);
-            foreach($t[TaskRepo::ASSIGNEES] as &$a){
+            foreach ($t[TaskRepo::ASSIGNEES] as &$a) {
                 $this->insertAssignee($tid, $a);
             }
+            $this->logStatusForTask($tid,$t["status"]);
             $this->db->commit();
         } catch (\Exception $e) {
             $this->db->rollback();
@@ -64,11 +65,11 @@ class TaskRepo
 
     public function update($tid, array $t)
     {
-        try{
+        try {
             $this->db->beginTransaction();
             $this->updateTask($tid, $t);
             $this->deleteAssignees($tid);
-            foreach($t[TaskRepo::ASSIGNEES] as &$a){
+            foreach ($t[TaskRepo::ASSIGNEES] as &$a) {
                 $this->insertAssignee($tid, $a);
             }
             $this->db->commit();
@@ -80,10 +81,10 @@ class TaskRepo
 
     public function updateAssignees($tid, $assignees)
     {
-        try{
+        try {
             $this->db->beginTransaction();
             $this->deleteAssignees($tid);
-            foreach($assignees as &$a){
+            foreach ($assignees as &$a) {
                 $this->insertAssignee($tid, $a);
             }
             $this->db->commit();
@@ -103,7 +104,7 @@ class TaskRepo
             "ttype" => $t["ttype"],
             "pid" => $t["pid"],
             "parent_tid" => $t["parent_tid"],
-            "reporter" => $t["reporter"], 
+            "reporter" => $t["reporter"],
             "title" => $t["title"],
             "description" => $t["description"],
             "wfid" => $t["wfid"],
@@ -118,7 +119,8 @@ class TaskRepo
         return $val["tid"];
     }
 
-    private function updateTask($tid, $t){
+    private function updateTask($tid, $t)
+    {
         $statement = "update tasks set 
                         ttype = :ttype, 
                         pid = :pid, 
@@ -135,7 +137,7 @@ class TaskRepo
             "ttype" => $t["ttype"],
             "pid" => $t["pid"],
             "parent_tid" => $t["parent_tid"],
-            "reporter" => $t["reporter"], 
+            "reporter" => $t["reporter"],
             "title" => $t["title"],
             "description" => $t["description"],
             "wfid" => $t["wfid"],
@@ -154,7 +156,8 @@ class TaskRepo
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function listStatusHistory($tid){
+    public function listStatusHistory($tid)
+    {
         $statement = "select tid, status_id, created_ts 
         from task_status_history
         where tid = ?
@@ -165,34 +168,45 @@ class TaskRepo
         return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function newStatusForTask($tid, $s){
-        try{
+    public function newStatusForTask($tid, $s)
+    {
+        try {
             $this->db->beginTransaction();
-            $statement = "insert into task_status_history (tid, status_id, created_ts)
-                        values (:tid, :status_id, :created_ts)";
-                        
-            $statement = $this->db->prepare($statement);
-            $statement->execute([
-                "tid" => $tid,
-                "status_id" => $s["status_id"],
-                "created_ts" => $s["created_ts"]
-            ]);
-
-            $statement = "update tasks set status = :status_id where tid = :tid";
-            $statement = $this->db->prepare($statement);
-            $statement->execute([
-                "tid" => $tid,
-                "status_id" => $s["status_id"]
-            ]);
+            $this->logStatusForTask($tid,$s);
+            $this->updateTaskStatus($tid,$s);
             $this->db->commit();
         } catch (Exception $e) {
             $this->db->rollback();
         }
     }
 
-    private function insertAssignee($tid, $assignee){
+    private function logStatusForTask($tid, $s)
+    {
+        $statement = "insert into task_status_history (tid, status_id, created_ts)
+        values (:tid, :status_id, :created_ts)";
+
+        $statement = $this->db->prepare($statement);
+        $statement->execute([
+            "tid" => $tid,
+            "status_id" => $s["status_id"],
+            "created_ts" => $s["created_ts"]
+        ]);
+    }
+
+    private function updateTaskStatus($tid, $s)
+    {
+        $statement = "update tasks set status = :status_id where tid = :tid";
+        $statement = $this->db->prepare($statement);
+        $statement->execute([
+            "tid" => $tid,
+            "status_id" => $s["status_id"]
+        ]);
+    }
+
+    private function insertAssignee($tid, $assignee)
+    {
         $statement = "insert into assignment (tid, uid, assigned_ts) values 
-                (:tid, :uid, :assigned_ts)" ;
+                (:tid, :uid, :assigned_ts)";
 
         $statement = $this->db->prepare($statement);
         $args = [
@@ -204,7 +218,8 @@ class TaskRepo
         return $statement->rowCount();
     }
 
-    private function deleteAssignees($tid) {
+    private function deleteAssignees($tid)
+    {
         $statement = "delete from assignment where tid = ?";
         $statement = $this->db->prepare($statement);
         $statement->execute(array($tid));
