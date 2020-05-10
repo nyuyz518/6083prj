@@ -28,6 +28,6 @@ class WorkflowModel{
     }
 
     public function patchWFName($wfid, $wf){
-        $this->patchWFName($wfid, $wf);
+        $this->wfRepo->updateWFName($wfid, $wf["wfname"]);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Src\Controller;
 
+use PDOException;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Src\Model\StatusModel;
 
@@ -30,7 +32,15 @@ class StatusController
     }
     public function newStatus($request, $response, $args)
     {
-        $this->statusModel->newStatus($request->getParsedBody());
+        try{
+            $this->statusModel->newStatus($request->getParsedBody());
+        } catch (PDOException $e){
+            if($e->getCode() == 23000){
+                throw new HttpBadRequestException($request, $e);
+            }else {
+                throw $e;
+            }
+        }
         return $response->withStatus(201);
     }
     public function getStatus($request, $response, $args)

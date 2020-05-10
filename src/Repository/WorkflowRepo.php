@@ -52,9 +52,9 @@ class WorkflowRepo
     {
         try {
             $this->db->beginTransaction();
-            $wfid = $this->updateWFName($wfid, $wf["wfname"]);
+            $this->updateWFName($wfid, $wf["wfname"]);
             $this->deleteSMEntries($wfid);
-            foreach($wf["state_machine"] as $sme){
+            foreach($wf[WorkflowRepo::STATE_MACHINE] as $sme){
                 $this->insertSMEntry($wfid, $sme);
             }
             $this->db->commit();
@@ -72,7 +72,6 @@ class WorkflowRepo
             "wfname" => $wfname,
             "wfid" => $wfid
         ]);
-        return $statement->rowCount();
     }
 
     private function findSMEntries($wfid){
