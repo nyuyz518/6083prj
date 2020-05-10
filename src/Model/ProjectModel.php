@@ -9,9 +9,9 @@ class ProjectModel
 {
     private $projectRepo = null;
 
-    public function __construct($db)
+    public function __construct(ProjectRepo $projectRepo)
     {
-        $this->projectRepo = new ProjectRepo($db);
+        $this->projectRepo = $projectRepo;
     }
 
     public function isOwner($uid, $pid)

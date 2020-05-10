@@ -8,9 +8,9 @@ class UserModel
 {
     private $userRepo = null;
 
-    public function __construct($db)
+    public function __construct(UserRepo $userRepo)
     {
-        $this->userRepo = new UserRepo($db);
+        $this->userRepo = $userRepo;
     }
 
     public function findAll($query)

@@ -14,31 +14,21 @@ class UserController
 {
     private $userModel;
 
-    public function __construct($db, $app)
+    public function __construct(UserModel $userModel)
     {
-        $this->userModel = new UserModel($db);
-        $this->setupRoute($app);
+        $this->userModel = $userModel;
     }
 
-    private function setupRoute($app)
-    {
-        $app->get('/user', array($this, "listUsers"));
-        $app->get('/user/{id}', array($this, "getUser"));
-        $app->put('/user/{id}', array($this, "updateUser"));
-        $app->post('/user', array($this, "newUser"));
-        $app->post('/auth', array($this, "authUser"));
-    }
-
-    public function listUsers($request, $response, $args)
+    public function listUsers($request, $response)
     {
         $query = $request->getQueryParams();
         $response->getBody()->write(json_encode($this->userModel->findAll($query)));
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
 
-    public function getUser($request, $response, $args)
+    public function getUser($request, $response, $id)
     {
-        $result = $this->userModel->find($args['id']);
+        $result = $this->userModel->find($id);
         if (!$result) {
             throw new HttpNotFoundException($request);
         }
@@ -46,7 +36,7 @@ class UserController
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
 
-    public function newUser($request, $response, $args)
+    public function newUser($request, $response)
     {
         $rc = $this->userModel->create($request->getParsedBody());
         if ($rc == 0) {
@@ -55,10 +45,10 @@ class UserController
         return $response->withStatus(201);
     }
 
-    public function updateUser($request, $response, $args)
+    public function updateUser($request, $response, $id)
     {
         $jwt = $request->getAttribute("jwt");
-        $uid = $args['id'];
+        $uid = $id;
         if ($jwt['uid'] != $uid) {
             throw new HttpUnauthorizedException($request);
         }
@@ -66,7 +56,7 @@ class UserController
         return $response->withStatus(204);
     }
 
-    public function authUser($request, $response, $args)
+    public function authUser($request, $response)
     {
         $body = $request->getParsedBody();
         if (!$body || !array_key_exists("uname", $body) || !array_key_exists("pwd", $body)) {

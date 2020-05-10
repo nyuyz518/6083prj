@@ -6,9 +6,9 @@ use Src\Repository\WorkflowRepo;
 
 class WorkflowModel{
     private $wfRepo = null;
-    public function __construct($db)
+    public function __construct(WorkflowRepo $wfRepo)
     {
-        $this->wfRepo = new WorkflowRepo($db);
+        $this->wfRepo = $wfRepo;
     }
 
     public function findWF($wfid) {

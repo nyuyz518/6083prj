@@ -11,29 +11,19 @@ class WorkflowController extends RestController
 {
     private $wfModel = null;
 
-    public function __construct($db, $app)
+    public function __construct(WorkflowModel $wfModel)
     {
-        $this->wfModel = new WorkflowModel($db);
-        $this->setupRoute($app);
+        $this->wfModel = $wfModel;
     }
 
-    private function setupRoute($app)
-    {
-        $app->get('/workflow', array($this, "listWFs"));
-        $app->post('/workflow', array($this, "newWF"));
-        $app->get('/workflow/{wfid}', array($this, "findWF"));
-        $app->put('/workflow/{wfid}', array($this, "updateWF"));
-        $app->patch('/workflow/{wfid}', array($this, "patchWFName"));
-    }
-
-    public function listWFs($request, $response, $args)
+    public function listWFs($response)
     {
         $json = json_encode($this->wfModel->listWFs());
         $response->getBody()->write($json);
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
 
-    public function newWF($request, $response, $args)
+    public function newWF($request, $response)
     {
         try {
             $this->wfModel->newWF($request->getParsedBody());
@@ -47,9 +37,9 @@ class WorkflowController extends RestController
         }
     }
 
-    public function findWF($request, $response, $args)
+    public function findWF($request, $response, $wfid)
     {
-        $wf = $this->wfModel->findWF($args["wfid"]);
+        $wf = $this->wfModel->findWF($wfid);
         if (!$wf) {
             throw new HttpNotFoundException($request);
         }
@@ -60,9 +50,9 @@ class WorkflowController extends RestController
                         ->withHeader("ETag", $eTag);
     }
 
-    public function updateWF($request, $response, $args)
+    public function updateWF($request, $response, $wfid)
     {
-        $wf = $this->wfModel->findWF($args["wfid"]);
+        $wf = $this->wfModel->findWF($wfid);
         if (!$wf) {
             throw new HttpNotFoundException($request);
         }
@@ -70,7 +60,7 @@ class WorkflowController extends RestController
             return $response->withStatus(412);
         }
         try {
-            $this->wfModel->updateWF($args["wfid"], $request->getParsedBody());
+            $this->wfModel->updateWF($wfid, $request->getParsedBody());
             return $response->withStatus(204);
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {
@@ -81,9 +71,9 @@ class WorkflowController extends RestController
         }
     }
 
-    public function patchWFName($request, $response, $args)
+    public function patchWFName($request, $response, $wfid)
     {
-        $wf = $this->wfModel->findWF($args["wfid"]);
+        $wf = $this->wfModel->findWF($wfid);
         if (!$wf) {
             throw new HttpNotFoundException($request);
         }
@@ -92,7 +82,7 @@ class WorkflowController extends RestController
         }
 
         try {
-            $this->wfModel->patchWFName($args["wfid"], $request->getParsedBody());
+            $this->wfModel->patchWFName($wfid, $request->getParsedBody());
             return $response->withStatus(204);
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {

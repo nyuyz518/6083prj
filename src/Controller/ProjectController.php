@@ -13,29 +13,19 @@ class ProjectController extends RestController
 {
     private $projectModel = null;
 
-    public function __construct($db, $app)
+    public function __construct(ProjectModel $projectModel)
     {
-        $this->projectModel = new ProjectModel($db);
-        $this->setupRoute($app);
+        $this->projectModel = $projectModel;
     }
 
-    private function setupRoute($app)
-    {
-        $app->get('/project', array($this, "listProjects"));
-        $app->post('/project', array($this, "newProject"));
-        $app->get('/project/{pid}', array($this, "getProject"));
-        $app->put('/project/{pid}', array($this, "updateProject"));
-        $app->patch('/project/{pid}', array($this, "patchProject"));
-    }
-
-    public function listProjects($request, $response, $args)
+    public function listProjects($response)
     {
         $response->getBody()->write(json_encode($this->projectModel->findAll()));
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
 
-    public function getProject($request, $response, $args){
-        $p = $this->projectModel->getProject($args["pid"]);
+    public function getProject($request, $response, $pid){
+        $p = $this->projectModel->getProject($pid);
         if(!$p){
             throw new HttpNotFoundException($request);
         }
@@ -46,7 +36,7 @@ class ProjectController extends RestController
                         ->withHeader("ETag", $eTag);
     }
 
-    public function newProject($request, $response, $args){
+    public function newProject($request, $response){
         $jwt = $request->getAttribute("jwt");
         try{
             $this->projectModel->create($jwt['uid'], $request->getParsedBody());
@@ -62,13 +52,13 @@ class ProjectController extends RestController
         }
     }
 
-    public function updateProject($request, $response, $args){
+    public function updateProject($request, $response, $pid){
         $jwt = $request->getAttribute("jwt");
-        if(!$this->projectModel->isOwner($jwt['uid'], $args["pid"])){
+        if(!$this->projectModel->isOwner($jwt['uid'], $pid)){
             throw new HttpUnauthorizedException($request);
         }
 
-        $p = $this->projectModel->getProject($args["pid"]);
+        $p = $this->projectModel->getProject($pid);
         if(!$p){
             throw new HttpNotFoundException($request);
         }
@@ -78,7 +68,7 @@ class ProjectController extends RestController
         }
 
         try{
-            $this->projectModel->update($args["pid"], $request->getParsedBody());
+            $this->projectModel->update($pid, $request->getParsedBody());
         } catch (PDOException $e){
             if($e->getCode() == 23000){
                 throw new HttpBadRequestException($request, $e);
@@ -89,13 +79,13 @@ class ProjectController extends RestController
         return $response->withStatus(204);
     }
 
-    public function patchProject($request, $response, $args){
+    public function patchProject($request, $response, $pid){
         $jwt = $request->getAttribute("jwt");
-        if(!$this->projectModel->isOwner($jwt['uid'], $args["pid"])){
+        if(!$this->projectModel->isOwner($jwt['uid'], $pid)){
             throw new HttpUnauthorizedException($request);
         }
 
-        $p = $this->projectModel->getProject($args["pid"]);
+        $p = $this->projectModel->getProject($pid);
         if(!$p){
             throw new HttpNotFoundException($request);
         }
@@ -105,7 +95,7 @@ class ProjectController extends RestController
         }
                 
         try{
-            $this->projectModel->patch($args["pid"], $request->getParsedBody());
+            $this->projectModel->patch($pid, $request->getParsedBody());
             return $response->withStatus(204);
         } catch (PDOException $e){
             if($e->getCode() == 23000){
@@ -117,5 +107,4 @@ class ProjectController extends RestController
             throw new HttpBadRequestException($request, $e);
         }
     }
-
 }

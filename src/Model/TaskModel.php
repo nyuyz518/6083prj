@@ -9,9 +9,9 @@ class TaskModel
 {
     private $taskRepo = null;
 
-    public function __construct($db)
+    public function __construct(TaskRepo $taskRepo)
     {
-        $this->taskRepo = new TaskRepo($db);
+        $this->taskRepo = $taskRepo;
     }
 
     public function find($id)

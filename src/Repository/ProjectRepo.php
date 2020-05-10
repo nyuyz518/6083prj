@@ -2,15 +2,17 @@
 
 namespace Src\Repository;
 
+use Src\System\DatabaseConnector;
+
 class ProjectRepo
 {
     private $db = null;
 
     public const OWNERS = "owners";
 
-    public function __construct($db)
+    public function __construct(DatabaseConnector $databaseConnector)
     {
-        $this->db = $db;
+        $this->db = $databaseConnector->getConnection();
     }
 
     public function findAll()

@@ -8,9 +8,9 @@ class StatusModel
 {
     private $statusRepo = null;
 
-    public function __construct($db)
+    public function __construct(StatusRepo $statusRepo)
     {
-        $this->statusRepo = new StatusRepo($db);
+        $this->statusRepo = $statusRepo;
     }
 
     public function newStatus($sname)

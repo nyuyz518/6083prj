@@ -3,14 +3,15 @@
 namespace Src\Repository;
 
 use Exception;
+use Src\System\DatabaseConnector;
 
 class WorkflowRepo
 {
     private $db = null;
     private const STATE_MACHINE = "state_machine";
-    public function __construct($db)
+    public function __construct(DatabaseConnector $databaseConnector)
     {
-        $this->db = $db;
+        $this->db = $databaseConnector->getConnection();
     }
 
     public function find($wfid){

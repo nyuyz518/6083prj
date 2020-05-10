@@ -2,13 +2,15 @@
 
 namespace Src\Repository;
 
+use Src\System\DatabaseConnector;
+
 class UserRepo
 {
     private $db = null;
 
-    public function __construct($db)
+    public function __construct(DatabaseConnector $databaseConnector)
     {
-        $this->db = $db;
+        $this->db = $databaseConnector->getConnection();
     }
 
     public function findAll()

@@ -2,12 +2,14 @@
 
 namespace Src\Repository;
 
+use Src\System\DatabaseConnector;
+
 class StatusRepo
 {
     private $db = null;
-    public function __construct($db)
+    public function __construct(DatabaseConnector $databaseConnector)
     {
-        $this->db = $db;
+        $this->db = $databaseConnector->getConnection();
     }
 
     public function insert($s)

@@ -11,26 +11,18 @@ class StatusController
 {
     private $statusModel = null;
 
-    public function __construct($db, $app)
+    public function __construct(StatusModel $statusModel)
     {
-        $this->statusModel = new StatusModel($db);
-        $this->setupRoute($app);
+        $this->statusModel = $statusModel;
     }
 
-    private function setupRoute($app)
-    {
-        $app->get('/status', array($this, "listStatus"));
-        $app->post('/status', array($this, "newStatus"));
-        $app->get('/status/{sid}', array($this, "getStatus"));
-    }
-
-    public function listStatus($request, $response, $args)
+    public function listStatus($response)
     {
         $json = json_encode($this->statusModel->listAllStatus());
         $response->getBody()->write($json);
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
-    public function newStatus($request, $response, $args)
+    public function newStatus($request, $response)
     {
         try{
             $this->statusModel->newStatus($request->getParsedBody());
@@ -43,9 +35,9 @@ class StatusController
         }
         return $response->withStatus(201);
     }
-    public function getStatus($request, $response, $args)
+    public function getStatus($request, $response, $sid)
     {
-        $s = $this->statusModel->getStatus($args["sid"]);
+        $s = $this->statusModel->getStatus($sid);
         if(!$s){
             throw new HttpNotFoundException($request);
         }

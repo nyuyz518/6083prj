@@ -3,6 +3,7 @@
 namespace Src\Repository;
 
 use Exception;
+use Src\System\DatabaseConnector;
 
 class TaskRepo
 {
@@ -10,9 +11,9 @@ class TaskRepo
 
     public const ASSIGNEES = "assignees";
 
-    public function __construct($db)
+    public function __construct(DatabaseConnector $databaseConnector)
     {
-        $this->db = $db;
+        $this->db = $databaseConnector->getConnection();
     }
 
     public function findAllByPid($pid)

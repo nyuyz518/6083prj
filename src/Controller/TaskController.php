@@ -13,26 +13,14 @@ class TaskController extends RestController
 {
     private $taskModel = null;
 
-    public function __construct($db, $app)
+    public function __construct(TaskModel $taskModel)
     {
-        $this->taskModel = new TaskModel($db);
-        $this->setupRoute($app);
+        $this->taskModel = $taskModel;
     }
 
-    private function setupRoute($app)
+    public function getTask($request, $response, $tid)
     {
-        $app->get('/task', array($this, "listTasks"));
-        $app->post('/task', array($this, "newTask"));
-        $app->get('/task/{tid}', array($this, "getTask"));
-        $app->put('/task/{tid}', array($this, "updateTask"));
-        $app->patch('/task/{tid}', array($this, "patchTask"));
-        $app->get('/task/{tid}/status', array($this, "getTaskStatusHistory"));
-        $app->post('/task/{tid}/status', array($this, "newTaskStatus"));
-    }
-
-    public function getTask($request, $response, $args)
-    {
-        $t = $this->taskModel->find($args['tid']);
+        $t = $this->taskModel->find($tid);
         if (!$t) {
             throw new HttpNotFoundException($request);
         }
@@ -43,14 +31,14 @@ class TaskController extends RestController
             ->withHeader("ETag", $eTag);
     }
 
-    public function listTasks($request, $response, $args)
+    public function listTasks($request, $response)
     {
         $query = $request->getQueryParams();
         $response->getBody()->write(json_encode($this->taskModel->findAll($query)));
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
 
-    public function newTask($request, $response, $args)
+    public function newTask($request, $response)
     {
         $jwt = $request->getAttribute("jwt");
         try {
@@ -67,14 +55,14 @@ class TaskController extends RestController
         }
     }
 
-    public function updateTask($request, $response, $args)
+    public function updateTask($request, $response, $tid)
     {
         $jwt = $request->getAttribute("jwt");
-        if (!$this->taskModel->isAssigned($jwt['uid'], $args["tid"])) {
+        if (!$this->taskModel->isAssigned($jwt['uid'], $tid)) {
             throw new HttpUnauthorizedException($request);
         }
 
-        $t = $this->taskModel->find($args["tid"]);
+        $t = $this->taskModel->find($tid);
         if (!$t) {
             throw new HttpNotFoundException($request);
         }
@@ -84,7 +72,7 @@ class TaskController extends RestController
         }
 
         try {
-            $this->taskModel->update($args["tid"], $request->getParsedBody());
+            $this->taskModel->update($tid, $request->getParsedBody());
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {
                 throw new HttpBadRequestException($request, $e);
@@ -95,14 +83,14 @@ class TaskController extends RestController
         return $response->withStatus(204);
     }
 
-    public function patchTask($request, $response, $args)
+    public function patchTask($request, $response, $tid)
     {
         $jwt = $request->getAttribute("jwt");
-        if (!$this->taskModel->isAssigned($jwt['uid'], $args["tid"])) {
+        if (!$this->taskModel->isAssigned($jwt['uid'], $tid)) {
             throw new HttpUnauthorizedException($request);
         }
 
-        $t = $this->taskModel->find($args["tid"]);
+        $t = $this->taskModel->find($tid);
         if (!$t) {
             throw new HttpNotFoundException($request);
         }
@@ -112,7 +100,7 @@ class TaskController extends RestController
         }
 
         try {
-            $this->taskModel->patch($args["tid"], $request->getParsedBody());
+            $this->taskModel->patch($tid, $request->getParsedBody());
             return $response->withStatus(204);
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {
@@ -125,15 +113,15 @@ class TaskController extends RestController
         }
     }
 
-    public function getTaskStatusHistory($request, $response, $args)
+    public function getTaskStatusHistory($response, $tid)
     {
-        $response->getBody()->write(json_encode($this->taskModel->listStatusHistory($args["tid"])));
+        $response->getBody()->write(json_encode($this->taskModel->listStatusHistory($tid)));
         return $response->withHeader("Content-Type", "application/json; charset=UTF-8");
     }
 
-    public function newTaskStatus($request, $response, $args)
+    public function newTaskStatus($request, $response, $tid)
     {
-        $this->taskModel->newStatusForTask($args["tid"], $request->getParsedBody());
+        $this->taskModel->newStatusForTask($tid, $request->getParsedBody());
         return $response->withStatus(201);
     }
 }
