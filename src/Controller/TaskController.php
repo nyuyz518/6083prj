@@ -8,14 +8,17 @@ use Src\Model\TaskModel;
 
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
+use Src\Model\ProjectModel;
 
 class TaskController extends RestController
 {
     private $taskModel = null;
+    private $projectModel = null;
 
-    public function __construct(TaskModel $taskModel)
+    public function __construct(TaskModel $taskModel, ProjectModel $projectModel)
     {
         $this->taskModel = $taskModel;
+        $this->projectModel = $projectModel;
     }
 
     public function getTask($request, $response, $tid)
