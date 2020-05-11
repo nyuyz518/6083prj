@@ -19,6 +19,18 @@ $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 
+$app->options('/{routes:.+}', function ($response) {
+    return $response;
+});
+
+$app->add(function ($request, $handler) {
+    $response = $handler->handle($request);
+    return $response
+            ->withHeader('Access-Control-Allow-Origin', getenv('CLIENT_ORIGIN'))
+            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+});
+
 
 $app->get('/user', [UserController::class, "listUsers"]);
 $app->get('/user/{id}', [UserController::class, "getUser"]);
