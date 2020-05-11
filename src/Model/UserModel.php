@@ -26,6 +26,7 @@ class UserModel
     {
         $record = $this->userRepo->find($id);
         return $record ? [
+            'uid' => $record['uid'],
             'uname' => $record['uname'],
             'email' => $record['email'] ?? null,
             'display_name' => $record['display_name'] ?? null,

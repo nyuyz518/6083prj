@@ -72,7 +72,9 @@ class UserController
                 "uid" => $uid
             ];
             $token = JWT::encode($payload, $secret, "HS256");
-            $response->getBody()->write(json_encode(["jwt" => $token]));
+            $u = $this->userModel->find($uid);
+            $u["jwt"] = $token;
+            $response->getBody()->write(json_encode($u));
             return $response->withStatus(200);
         } else {
             throw new HttpUnauthorizedException($request);
