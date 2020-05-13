@@ -36,7 +36,7 @@ class ProjectRepo
         } else {
             $p = $result[0];
             $p[ProjectRepo::OWNERS] = $this->getOwners($id);
-            return $result[0];
+            return $p;
         }
     }
 
