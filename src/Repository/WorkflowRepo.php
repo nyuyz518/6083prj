@@ -43,6 +43,7 @@ class WorkflowRepo
                 $this->insertSMEntry($wfid, $sme);
             }
             $this->db->commit();
+            return $wfid;
         } catch (Exception $e) {
             $this->db->rollback();
             throw $e;

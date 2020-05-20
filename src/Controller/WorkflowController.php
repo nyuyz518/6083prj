@@ -26,7 +26,9 @@ class WorkflowController extends RestController
     public function newWF($request, $response)
     {
         try {
-            $this->wfModel->newWF($request->getParsedBody());
+            $wfid = $this->wfModel->newWF($request->getParsedBody());
+            $response->getBody()->write(json_encode(["wfid" => $wfid]));
+            $response->withHeader("Content-Type", "application/json; charset=UTF-8");
             return $response->withStatus(201);
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {

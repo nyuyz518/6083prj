@@ -20,7 +20,7 @@ class WorkflowModel{
     }
 
     public function newWF($wf){
-        $this->wfRepo->insert($wf);
+        return $this->wfRepo->insert($wf);
     }
 
     public function updateWF($wfid, $wf){

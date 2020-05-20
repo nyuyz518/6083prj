@@ -35,6 +35,7 @@ class StatusController
         }
         return $response->withStatus(201);
     }
+    
     public function getStatus($request, $response, $sid)
     {
         $s = $this->statusModel->getStatus($sid);
