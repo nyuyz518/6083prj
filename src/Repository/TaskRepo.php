@@ -56,7 +56,7 @@ class TaskRepo
             foreach ($t[TaskRepo::ASSIGNEES] as &$a) {
                 $this->insertAssignee($tid, $a);
             }
-            $this->logStatusForTask($tid,$t["status"]);
+            $this->logStatusForTask($tid,$t);
             $this->db->commit();
         } catch (\Exception $e) {
             $this->db->rollback();
@@ -181,7 +181,7 @@ class TaskRepo
         }
     }
 
-    private function logStatusForTask($tid, $s)
+    private function logStatusForTask($tid, $t)
     {
         $statement = "insert into task_status_history (tid, status_id, created_ts)
         values (:tid, :status_id, :created_ts)";
@@ -189,8 +189,8 @@ class TaskRepo
         $statement = $this->db->prepare($statement);
         $statement->execute([
             "tid" => $tid,
-            "status_id" => $s["status_id"],
-            "created_ts" => $s["created_ts"]
+            "status_id" => $t["status"],
+            "created_ts" => date("Y-m-d H:m:s")
         ]);
     }
 
@@ -200,7 +200,7 @@ class TaskRepo
         $statement = $this->db->prepare($statement);
         $statement->execute([
             "tid" => $tid,
-            "status_id" => $s["status_id"]
+            "status_id" => $s["status"]
         ]);
     }
 

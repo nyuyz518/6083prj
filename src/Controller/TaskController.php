@@ -61,13 +61,15 @@ class TaskController extends RestController
     public function updateTask($request, $response, $tid)
     {
         $jwt = $request->getAttribute("jwt");
-        if (!$this->taskModel->isAssigned($jwt['uid'], $tid)) {
-            throw new HttpUnauthorizedException($request);
-        }
 
         $t = $this->taskModel->find($tid);
         if (!$t) {
             throw new HttpNotFoundException($request);
+        }
+
+        if (!$this->taskModel->isAssigned($jwt['uid'], $tid) 
+            && !$this->projectModel->isOwner($jwt['uid'], $t["pid"])) {
+            throw new HttpUnauthorizedException($request);
         }
 
         if ($this->optimisticLockFailure($request, json_encode($t))) {
@@ -89,13 +91,14 @@ class TaskController extends RestController
     public function patchTask($request, $response, $tid)
     {
         $jwt = $request->getAttribute("jwt");
-        if (!$this->taskModel->isAssigned($jwt['uid'], $tid)) {
-            throw new HttpUnauthorizedException($request);
-        }
-
         $t = $this->taskModel->find($tid);
         if (!$t) {
             throw new HttpNotFoundException($request);
+        }
+
+        if (!$this->taskModel->isAssigned($jwt['uid'], $tid) 
+            && !$this->projectModel->isOwner($jwt['uid'], $t["pid"])) {
+            throw new HttpUnauthorizedException($request);
         }
 
         if ($this->optimisticLockFailure($request, json_encode($t))) {
@@ -124,6 +127,16 @@ class TaskController extends RestController
 
     public function newTaskStatus($request, $response, $tid)
     {
+        $jwt = $request->getAttribute("jwt");
+        $t = $this->taskModel->find($tid);
+        if (!$t) {
+            throw new HttpNotFoundException($request);
+        }
+
+        if (!$this->taskModel->isAssigned($jwt['uid'], $tid) 
+            && !$this->projectModel->isOwner($jwt['uid'], $t["pid"])) {
+            throw new HttpUnauthorizedException($request);
+        }
         $this->taskModel->newStatusForTask($tid, $request->getParsedBody());
         return $response->withStatus(201);
     }
