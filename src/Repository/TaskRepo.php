@@ -213,7 +213,7 @@ class TaskRepo
         $args = [
             "tid" => $tid,
             "uid" => $assignee["uid"],
-            "assigned_ts" => $assignee["assigned_ts"]
+            "assigned_ts" => $assignee["created_ts"]
         ];
         $statement->execute($args);
         return $statement->rowCount();
