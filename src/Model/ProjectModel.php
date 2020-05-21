@@ -40,7 +40,7 @@ class ProjectModel
         if(array_key_exists(ProjectRepo::OWNERS, $p) 
             && count($p[ProjectRepo::OWNERS]) == 1
             && $uid == $p[ProjectRepo::OWNERS][0]["uid"]){
-                $this->projectRepo->insert($p);
+                return $this->projectRepo->insert($p);
         } else {
             throw new InvalidArgumentException();
         }

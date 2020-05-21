@@ -49,6 +49,7 @@ class ProjectRepo
                 $this->insertOwner($pid, $owner);
             }
             $this->db->commit();
+            return $pid;
         } catch (\Exception $e) {
             $this->db->rollback();
             throw $e;

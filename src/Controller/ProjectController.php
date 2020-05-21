@@ -39,8 +39,9 @@ class ProjectController extends RestController
     public function newProject($request, $response){
         $jwt = $request->getAttribute("jwt");
         try{
-            $this->projectModel->create($jwt['uid'], $request->getParsedBody());
-            return $response->withStatus(201);
+            $pid = $this->projectModel->create($jwt['uid'], $request->getParsedBody());
+            $response->getBody()->write(json_encode(["pid" => $pid]));
+            return $response->withStatus(201)->withHeader("Content-Type", "application/json; charset=UTF-8");
         } catch (PDOException $e){
             if($e->getCode() == 23000){
                 throw new HttpBadRequestException($request, $e);
